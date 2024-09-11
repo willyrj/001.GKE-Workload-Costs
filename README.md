@@ -31,4 +31,21 @@ https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#create-b
 4. Habilitar BigQuery Data Transfer Service API:
     gcloud services enable bigquerydatatransfer.googleapis.com
 5. Crear un dataset Bigquery:
-    
+    en consola. creo all_billing_data
+6. Habilito exportacion de Cloud Billing al dataset de BigQuery.
+    En billing export.
+
+7. Visualizo 
+
+Obtén los costos después los de créditos por espacio de nombres
+SELECT
+  labels.value as namespace,
+  SUM(cost) + SUM(IFNULL((SELECT SUM(c.amount) FROM UNNEST(credits) c), 0)) AS cost_after_credits,
+FROM `project-ID.dataset.gcp_billing_export_resource_v1_XXXXXX-XXXXXX-XXXXXX`
+LEFT JOIN UNNEST(labels) as labels
+  ON labels.key = "k8s-namespace"
+GROUP BY namespace
+;
+
+Reemplaza BILLING_DATASET_TABLE por el nombre del conjunto de datos que creaste en BigQuery.
+El nombre de la tabla es similar a gcp_billing_export_resource_v1_<BILLING_ACCOUNT_ID>.
